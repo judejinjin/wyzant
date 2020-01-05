@@ -1,0 +1,94 @@
+Question 1
+
+
+a.
+
+Netstat is a command line tool to display network connection on Linux.
+Its output format looks like below:
+protocol  Recv-Q  Send_Q  Local_Address_and_Port  Foreign_Address_and_Port State
+
+We can collect output from "netstat" to build a list of IP addresses(Foreign_Address) that this one user(root) is connecting to this Linux machine. Then we can detect intrusions from the output of netstat by identifying Foreign_Addresses that are not in the list of known IP addresses. 
+
+Top is a command line tool to display processes on Linux. We can collect the output of "top" command to build a usage profile of this one user(root) on the Linux machine. We can compute statistics of most commonly used program count and percentage distrubtion of this one user(root). Then we can detect possible intrusions by identifying processes displayed by "top" command that are not commonly expected bases on the statistics.
+
+b.
+If a developer is given access to the Linux machine, this developer will log on from different IP addresses and have a different usage profile. We have to rebuild the list of IP addresses and usage profile. The mostly commonly used program count and percent distribution will have more programs in it and flatter distribution(fatter tail), which will make intrusion detection less accurate
+
+Question 2
+
+Smart device that uses ZigBee suffers from the below two attacks
+
+network key sniffing:
+  1. jam the communication
+  2. wait for the user to re-pair the smart device and steal the network key
+
+
+device hijacking:
+  1. identify the target device
+  2. reset it to factory setting which will force the device to join the first network it finds
+
+
+Question 3
+ 
+The authors are able to identify the identity of websites visited by a user via traffic analysis.
+ 
+Adding padding prior to encryption thwarts traffic analysis attacks by obfuscating packet lengths.
+ 
+The paper discusses 3 types of padding:
+type 1: SSH/TLS/IPSec motivated padding
+type 2: padding schemes not easily supported by existing encrypted network protocol
+type 3: distribution-based padding(DTS and TM)
+ 
+ 
+The authors show that traffic classifiers that only use "coarse" information such as overall time,
+total bandwidth and size of bursts can still classify identity of websites in a closed world experiment
+of 128 known websites despite of all 3 types of padding.
+ 
+"Coarse" information like overall time, total bandwidth and size of bursts cannot be hidden efficiently without wasting a lot of bandwidth.
+ 
+The authors also shows that an inefficient strawman countermeasure, Buffered Fixed Length Obfuscation that sends packets
+of fixed length at fixed intervals, using dummy packets to both fill in and exttend the transmission,
+can greatly reduce the accuracy of traffic analysis.
+ 
+ 
+Question 4
+a.
+ 
+The paper analysed traffic in TCP protocol.
+b.
+package size, timing and direction
+ 
+c.
+SMTP(25)
+HTTP(80)
+HTTPS(443)
+FTP(20)
+SSH(22)
+TELNET(23)
+Outbound SMTP
+Oubound AOL Instant Messenger
+ 
+Question 5
+ 
+example 1:
+ 
+Tire pressure monitoring system(TPMS) consists of a sensor module inside the tire that sends radio
+frequency signals to the receiving tire pressure control unit, which analyse the data and send results
+and commands to the central car computer over the Controller-area Network(CAN).
+ 
+Because its lack of encryption and authentication, it can be eavesdropped and spoofed.
+Attackers have been able spoof and send false alarms to the car's dashboard.
+ 
+ 
+reference : "Security and Privacy Vulneabilities of In-Car Wireless Netorks: A Tire
+Pressure Monitoring System Case Study" by Rouf and et al.
+ 
+ 
+example 2:
+ 
+Home automation system can be hijacked by jamming the communication channel to force
+user-initiated re-pairing, which will allow the network key to be sniffed by the attacker.
+Acquiring the network key, the attacker can gain complete control of the home automation system.
+ 
+reference: ZigBee-Exploited-wp.pdf
+ 

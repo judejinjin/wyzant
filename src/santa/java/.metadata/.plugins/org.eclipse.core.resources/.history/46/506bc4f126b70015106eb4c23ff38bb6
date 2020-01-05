@@ -1,0 +1,121 @@
+/*************************************************************************
+ *  YOU DO NOT NEED TO MODIFY THIS FILE
+ *
+ * Taken from section 3.2, An Introduction to Programming (in Java) by Robert
+ * Sedgewick and Kevin Wayne
+ *
+ *  Compilation:  javac Point.java
+ *  Execution:    java Point
+ *
+ *  Immutable data type for 2D points.
+ *
+ *************************************************************************/
+
+public class Point { 
+    private final double x;   // Cartesian
+    private final double y;   // coordinates
+    private final double gift;
+    private final int id;
+    
+    private static final double R = 6371;
+    
+    // create and initialize a point with given (x, y)
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+        this.gift = 0;
+        this.id = -1;
+    }
+
+    public Point(int id, double x, double y, double gift) {
+        this.x = x;
+        this.y = y;
+        this.gift = gift;
+        this.id = id;
+    }
+
+    public double getGift(){
+    	return gift;
+    }
+    
+    public int getId(){
+    	return id;
+    }
+    
+    // return Euclidean distance between invoking point this and that
+    public double distanceTo(Point that) {
+        double dx = this.x - that.x;
+        double dy = this.y - that.y;
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    public double haversineDistanceTo(Point that){
+    	double lat1 = toRadian(x);
+        double lon1 = toRadian(y);
+        double lat2 = toRadian(that.x);
+        double lon2 = toRadian(that.y);
+        
+        double lat = lat2-lat1;
+        double lon = lon2-lon1;
+        double d = Math.sin(lat/2)*Math.sin(lat/2) + Math.cos(lat1)*Math.cos(lat2)*Math.sin(lon/2)*Math.sin(lon/2);
+        return 2 * R * Math.asin(Math.sqrt(d));
+    }
+    
+    private static double toRadian(double value) {
+        return value * Math.PI / 180;
+    }
+    
+    // draw this point using standard draw
+    public void draw() {
+        StdDraw.point(x, y);
+    }
+
+    public void drawHaversinePoint(int canvasWidth, int canvasHeight){
+    	
+    	int canvasY =  (int) ((canvasWidth/360.0) * (180 + this.y));
+    	int canvasX =  (int) ((canvasHeight/180.0) * (90 - this.x));
+    	StdDraw.point(canvasX,  canvasY);
+    }
+    
+    // draw the line from the invoking point this to that using standard draw
+    public void drawTo(Point that) {
+        StdDraw.line(this.x, this.y, that.x, that.y);
+    }
+
+ // draw the line from the invoking point this to that using standard draw
+    public void drawToHaversinePoint(Point that, int canvasWidth, int canvasHeight) {
+    	int canvasY =  (int) ((canvasWidth/360.0) * (180 + this.y));
+    	int canvasX =  (int) ((canvasHeight/180.0) * (90 - this.x));
+    	int thatY =  (int) ((canvasWidth/360.0) * (180 + that.y));
+    	int thatX =  (int) ((canvasHeight/180.0) * (90 - that.x));
+        StdDraw.line(canvasX, canvasY, thatX, thatY);
+    }
+    
+    // return string representation of this point
+    public String toString() {
+    	if(gift>0)
+    		return "(" + x + ", " + y + ")" + ":" + gift;
+    	else
+    		return "(" + x + ", " + y + ")";
+    }
+
+    // test client
+    public static void main(String[] args) {
+
+        // get dimensions
+        int w = StdIn.readInt();
+        int h = StdIn.readInt();
+        StdDraw.setCanvasSize(w, h);
+        StdDraw.setXscale(0, w);
+        StdDraw.setYscale(0, h);
+        StdDraw.setPenRadius(.005);
+
+        // read in and plot points one at at time
+        while (!StdIn.isEmpty()) {
+            double x = StdIn.readDouble();
+            double y = StdIn.readDouble();
+            Point p = new Point(x, y);
+            p.draw();
+        }
+    }
+}

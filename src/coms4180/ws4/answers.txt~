@@ -1,0 +1,30 @@
+Question 1
+
+
+a.
+
+Netstat is a command line tool to display network connection on Linux.
+Its output format looks like below:
+protocol  Recv-Q  Send_Q  Local_Address_and_Port  Foreign_Address_and_Port State
+
+We can collect output from "netstat" to build a list of IP addresses(Foreign_Address) that this one user(root) is connecting to this Linux machine. Then we can detect intrusions from the output of netstat by identifying Foreign_Addresses that are not in the list of known IP addresses. 
+
+Top is a command line tool to display processes on Linux. We can collect the output of "top" command to build a usage profile of this one user(root) on the Linux machine. We can compute statistics of most commonly used program count and percentage distrubtion of this one user(root). Then we can detect possible intrusions by identifying processes displayed by "top" command that are not commonly expected bases on the statistics.
+
+b.
+If a developer is given access to the Linux machine, this developer will log on from different IP addresses and have a different usage profile. We have to rebuild the list of IP addresses and usage profile. The mostly commonly used program count and percent distribution will have more programs in it and flatter distribution(fatter tail), which will make intrusion detection less accurate
+
+Question 2
+
+Smart device that uses ZigBee suffers from the below two attacks
+
+network key sniffing:
+  1. jam the communication
+  2. wait for the user to re-pair the smart device and steal the network key
+
+
+device hijacking:
+  1. identify the target device
+  2. reset it to factory setting which will force the device to join the first network it finds
+
+

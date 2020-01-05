@@ -1,0 +1,67 @@
+14:06:55 **** Build of configuration Debug for project satan ****
+make all 
+'Building file: ../santa_mul.cc'
+'Invoking: Cross G++ Compiler'
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"santa_mul.d" -MT"santa_mul.d" -o "santa_mul.o" "../santa_mul.cc"
+In file included from e:\tools\mingw\bin\../lib/gcc/mingw32/4.6.2/include/c++/thread:35:0,
+                 from ../santa_mul.cc:15:
+e:\tools\mingw\bin\../lib/gcc/mingw32/4.6.2/include/c++/bits/c++0x_warning.h:32:2: error: #error This file requires compiler and library support for the upcoming ISO C++ standard, C++0x. This support is currently experimental, and must be enabled with the -std=c++0x or -std=gnu++0x compiler options.
+../santa_mul.cc:72:3: error: 'mutex' does not name a type
+../santa_mul.cc: In function 'bool verify(double, double)':
+../santa_mul.cc:113:1: warning: no return statement in function returning non-void [-Wreturn-type]
+../santa_mul.cc: In function 'double calc_penalty(const std::vector<int>&, double)':
+../santa_mul.cc:144:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../santa_mul.cc: In function 'int update_trip(int, int)':
+../santa_mul.cc:175:1: warning: no return statement in function returning non-void [-Wreturn-type]
+../santa_mul.cc: In function 'int update_trip_without_distance(int, int, int)':
+../santa_mul.cc:197:1: warning: no return statement in function returning non-void [-Wreturn-type]
+../santa_mul.cc: In function 'void save_partial_result(char*, const std::vector<std::vector<int> >&)':
+../santa_mul.cc:375:33: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../santa_mul.cc: In function 'void sa_work(const char*, long long int, double, int, int)':
+../santa_mul.cc:402:16: error: 'unique_lock' was not declared in this scope
+../santa_mul.cc:402:28: error: 'mutex' was not declared in this scope
+../santa_mul.cc:402:33: error: template argument 1 is invalid
+../santa_mul.cc:402:33: error: template argument 2 is invalid
+../santa_mul.cc:402:35: error: expected unqualified-id before '>' token
+../santa_mul.cc:404:11: error: 'locks' was not declared in this scope
+../santa_mul.cc:404:39: error: 'struct _trip_info' has no member named 'trip_mutex'
+../santa_mul.cc:404:51: error: 'defer_lock' was not declared in this scope
+../santa_mul.cc:406:11: error: 'locks' was not declared in this scope
+../santa_mul.cc:418:11: error: 'locks' was not declared in this scope
+../santa_mul.cc:424:41: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../santa_mul.cc:435:109: warning: unknown conversion type character 'l' in format [-Wformat]
+../santa_mul.cc:435:109: warning: too many arguments for format [-Wformat-extra-args]
+../santa_mul.cc:444:56: warning: unknown conversion type character 'l' in format [-Wformat]
+../santa_mul.cc:444:56: warning: too many arguments for format [-Wformat-extra-args]
+../santa_mul.cc:445:61: warning: unknown conversion type character 'l' in format [-Wformat]
+../santa_mul.cc:445:61: warning: too many arguments for format [-Wformat-extra-args]
+../santa_mul.cc:478:7: error: 'unique_lock' is not a member of 'std'
+../santa_mul.cc:478:24: error: 'mutex' is not a member of 'std'
+../santa_mul.cc:478:52: error: 'struct _trip_info' has no member named 'trip_mutex'
+../santa_mul.cc:478:64: error: 'defer_lock' is not a member of 'std'
+../santa_mul.cc:478:79: error: 'lock_a' was not declared in this scope
+../santa_mul.cc:543:5: error: 'unique_lock' is not a member of 'std'
+../santa_mul.cc:543:22: error: 'mutex' is not a member of 'std'
+../santa_mul.cc:543:50: error: 'struct _trip_info' has no member named 'trip_mutex'
+../santa_mul.cc:543:62: error: 'defer_lock' is not a member of 'std'
+../santa_mul.cc:543:77: error: 'lock_a' was not declared in this scope
+../santa_mul.cc:544:5: error: 'unique_lock' is not a member of 'std'
+../santa_mul.cc:544:22: error: 'mutex' is not a member of 'std'
+../santa_mul.cc:544:50: error: 'struct _trip_info' has no member named 'trip_mutex'
+../santa_mul.cc:544:62: error: 'defer_lock' is not a member of 'std'
+../santa_mul.cc:544:77: error: 'lock_b' was not declared in this scope
+../santa_mul.cc:545:36: error: 'try_lock' was not declared in this scope
+../santa_mul.cc: In function 'void save_result(char*, char*)':
+../santa_mul.cc:864:39: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../santa_mul.cc:872:39: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+../santa_mul.cc: In function 'int main(int, char**)':
+../santa_mul.cc:931:32: warning: unknown conversion type character 'l' in format [-Wformat]
+../santa_mul.cc:931:32: warning: too many arguments for format [-Wformat-extra-args]
+../santa_mul.cc:945:3: error: 'thread' was not declared in this scope
+../santa_mul.cc:945:11: error: 'tt' was not declared in this scope
+../santa_mul.cc:945:20: error: expected type-specifier before 'thread'
+../santa_mul.cc:945:20: error: expected ';' before 'thread'
+make: *** [santa_mul.o] Error 1
+
+14:06:59 Build Finished (took 3s.346ms)
+

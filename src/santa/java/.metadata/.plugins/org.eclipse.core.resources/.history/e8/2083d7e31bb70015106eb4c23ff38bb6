@@ -1,0 +1,242 @@
+
+public class Tour {
+	private class Node {
+		private Point p;
+		private Node next;
+
+		public Node(Point p) {
+			this.p = p;
+			next = null;
+		}
+
+		public void setNext(Node next) {
+			this.next = next;
+		}
+
+		public Node getNext() {
+			return next;
+		}
+
+		public Point getPoint() {
+			return p;
+		}
+	}
+
+	private Node start;
+	private int size;
+	private double totalDistance;
+	private double weightedDistance;
+	private double load;
+	private static final double capacity = 1000;
+	private static final double sleighWeight = 10;
+	
+	public double getCapacity(){
+		return capacity;
+	}
+	
+	public Tour(){
+		Point p = new Point(-1, 0, 0, sleighWeight)
+		start = new Node(p);
+		start.setNext(start);
+		size = 1;
+		totalDistance = 0;
+		weightedDistance = 0;
+		load = sleighWeight;
+	}
+	
+	public int size() {
+		return size;
+	}
+	
+	public void show(){
+
+		Node curr = start;
+		for(int i = 0; i < size; i++){
+			StdOut.printf("%s", curr.getPoint().toString());
+			curr = curr.getNext();
+		}
+		//should be circular
+		if(curr.getNext()!=null)
+			StdOut.printf("%s", curr.getNext().getPoint().toString());
+	}
+	
+	public double distance(){
+		
+		Node curr = start;
+		double dist = 0;
+
+		for(int i = 0; i < size; i++){
+			dist = dist + curr.getPoint().distanceTo(curr.getNext().getPoint());
+			curr = curr.getNext();
+		}
+		return dist;
+	}
+	
+    public void insertNearest(Point p){
+    	Node node = new Node(p);
+    	
+    	if(start == null){
+    		start = node;
+    		start.setNext(node);
+    		size++;
+    		return;
+    	}
+    	
+    	Node nearestNode = null;
+    	Node curr = start;
+    	double nearest = -1;
+
+    	for(int i = 0; i < size; i++){
+    		double dist = curr.getPoint().distanceTo(p);
+    		if(dist < nearest || nearest < 0){
+    			nearest = dist;
+    			nearestNode = curr;
+    		}
+    		curr = curr.getNext();
+    	}
+    	
+    	Node oldNext = nearestNode.getNext();
+    	nearestNode.setNext(node);
+    	node.setNext(oldNext);
+    	size++;
+    }
+    
+    public void insertSmallest(Point p){
+    	Node node = new Node(p);
+    	
+    	if(start == null){
+    		start = node;
+    		start.setNext(node);
+    		totalDistance = 0;
+    		load+= p.getGift();
+    		size++;
+    		return;
+    	}
+    	
+    	Node smallestNode = null;
+    	Node curr = start;
+    	double smallest = -1;
+    	double currDistanceTo = -1;
+    	double nextDistanceTo = -1;
+    	for(int i = 0; i < size; i++){
+    		if(nextDistanceTo!=-1){
+    			currDistanceTo = nextDistanceTo;
+    			nextDistanceTo = curr.getNext().getPoint().distanceTo(p);
+    		}else{
+    			currDistanceTo = curr.getPoint().distanceTo(p);
+    			nextDistanceTo = curr.getNext().getPoint().distanceTo(p);
+    		}
+    		double dist = totalDistance - curr.getPoint().distanceTo(curr.getNext().getPoint());
+    		dist += currDistanceTo + nextDistanceTo;
+    		
+    		if(dist < smallest || smallest < 0){
+    			smallest = dist;
+    			smallestNode = curr;
+    		}
+    		curr = curr.getNext();   		
+    	}
+    	
+    	Node oldNext = smallestNode.getNext();
+    	smallestNode.setNext(node);
+    	node.setNext(oldNext);
+    	size++;
+    	totalDistance = smallest;
+    }
+    
+    public void insertSmallestByWeightedDistance(Point p){
+    	Node node = new Node(p);
+    	
+    	if(start == null){
+    		start = node;
+    		start.setNext(node);
+    		weightedDistance = 0;
+    		size++;
+    		return;
+    	}
+    	
+    	Node smallestNode = null;
+    	Node curr = start;
+    	double smallest = -1;
+    	double currDistanceTo = -1;
+    	double nextDistanceTo = -1;
+    	double oldDistance = -1;
+    	double distanceSoFar = 0;
+    	double smallestWeightedDistance = -1;
+    	
+    	for(int i = 0; i < size; i++){
+    		if(nextDistanceTo!=-1){
+    			currDistanceTo = nextDistanceTo;
+    			nextDistanceTo = curr.getNext().getPoint().distanceTo(p);
+    		}else{
+    			currDistanceTo = curr.getPoint().distanceTo(p);
+    			nextDistanceTo = curr.getNext().getPoint().distanceTo(p);
+    		}
+    		oldDistance = curr.getPoint().distanceTo(curr.getNext().getPoint());
+    		
+    		distanceSoFar += currDistanceTo;
+    		
+    		double currWeightedDistance = weightedDistance + p.getGift() * distanceSoFar;
+       		currWeightedDistance += (nextDistanceTo+currDistanceTo-oldDistance) * getWeightFromPointOn(i+1);
+       		
+       		if(currWeightedDistance<smallest || smallest == -1){
+       			smallest = currWeightedDistance;
+       			smallestNode = curr;
+       		}
+    		curr = curr.getNext();
+    	}
+    	
+    	Node oldNext = smallestNode.getNext();
+    	smallestNode.setNext(node);
+    	node.setNext(oldNext);
+    	size++;
+    	weightedDistance = smallestWeightedDistance;
+    	load += p.getGift();
+    }
+    
+    private double getWeightFromPointOn(int n){
+    	Node curr = start;
+    	double weight = 0;
+    	for(int i = 0; i <= size; i++){
+    		if(i >= n)
+    			weight += curr.getPoint().getGift();
+    		curr = curr.getNext();
+    	}
+    	return weight;
+    }
+    
+    public double getLoad(){
+    	return load;
+    }
+    
+    public double getWeightedDistance(){
+    	return weightedDistance;
+    }
+    
+    public void draw(){
+    	if(start == null)
+    		return;
+    	
+    	Node curr = start;
+    	
+    	for(int i = 0; i < size; i++){
+    		curr.getPoint().draw();
+    		curr.getPoint().drawTo(curr.getNext().getPoint());
+    		curr = curr.getNext();
+    	}
+
+    }
+    
+    public void drawHaversine(int width, int height){
+    	if(start == null)
+    		return;
+    	
+    	Node curr = start;
+    	
+    	for(int i = 0; i < size; i++){
+    		curr.getPoint().drawHaversinePoint(width, height);
+    		curr.getPoint().drawToHaversinePoint(curr.getNext().getPoint(), width, height);
+    		curr = curr.getNext();
+    	}
+
+    }
+}

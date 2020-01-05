@@ -1,0 +1,145 @@
+
+public class Tour {
+	private class Node {
+		private Point p;
+		private Node next;
+
+		public Node(Point p) {
+			this.p = p;
+			next = null;
+		}
+
+		public void setNext(Node next) {
+			this.next = next;
+		}
+
+		public Node getNext() {
+			return next;
+		}
+
+		public Point getPoint() {
+			return p;
+		}
+	}
+
+	private Node start;
+	private int size;
+	private double totalDistance;
+	
+	public Tour() {
+		start = null;
+		size = 0;
+	}
+
+	public int size() {
+		return size;
+	}
+	
+	public void show(){
+
+		Node curr = start;
+		for(int i = 0; i < size; i++){
+			StdOut.printf("%s", curr.getPoint().toString());
+			curr = curr.getNext();
+		}
+		//should be circular
+		if(curr.getNext()!=null)
+			StdOut.printf("%s", curr.getNext().getPoint().toString());
+	}
+	
+	public double distance(){
+		
+		Node curr = start;
+		double dist = 0;
+
+		for(int i = 0; i < size; i++){
+			dist = dist + curr.getPoint().distanceTo(curr.getNext().getPoint());
+			curr = curr.getNext();
+		}
+		return dist;
+	}
+	
+    public void insertNearest(Point p){
+    	Node node = new Node(p);
+    	
+    	if(start == null){
+    		start = node;
+    		start.setNext(node);
+    		size++;
+    		return;
+    	}
+    	
+    	Node nearestNode = null;
+    	Node curr = start;
+    	double nearest = -1;
+
+    	for(int i = 0; i < size; i++){
+    		double dist = curr.getPoint().distanceTo(p);
+    		if(dist < nearest || nearest < 0){
+    			nearest = dist;
+    			nearestNode = curr;
+    		}
+    		curr = curr.getNext();
+    	}
+    	
+    	Node oldNext = nearestNode.getNext();
+    	nearestNode.setNext(node);
+    	node.setNext(oldNext);
+    	size++;
+    }
+    
+    public void insertSmallest(Point p){
+    	Node node = new Node(p);
+    	
+    	if(start == null){
+    		start = node;
+    		start.setNext(node);
+    		totalDistance = 0;
+    		size++;
+    		return;
+    	}
+    	
+    	Node smallestNode = null;
+    	Node curr = start;
+    	double smallest = -1;
+    	double currDistanceTo = -1;
+    	double nextDistanceTo = -1;
+    	for(int i = 0; i < size; i++){
+    		if(nextDistanceTo!=-1){
+    			currDistanceTo = nextDistanceTo;
+    			nextDistanceTo = curr.getNext().getPoint().distanceTo(p);
+    		}else{
+    			currDistanceTo = curr.getPoint().distanceTo(p)
+    			nextDistanceTo = curr.getNext().getPoint().distanceTo(p);
+    		}
+    		double dist = totalDistance - curr.getPoint().distanceTo(curr.getNext().getPoint());
+    		dist += currDistanceTo + nextDistanceTo;
+    		
+    		if(dist < smallest || smallest < 0){
+    			smallest = dist;
+    			smallestNode = curr;
+    		}
+    		curr = curr.getNext();
+    	}
+    	
+    	Node oldNext = smallestNode.getNext();
+    	smallestNode.setNext(node);
+    	node.setNext(oldNext);
+    	size++;
+    	totalDistance = smallest;
+    }
+    
+    public void draw(){
+    	if(start == null)
+    		return;
+    	
+    	Node curr = start;
+    	
+    	for(int i = 0; i < size; i++){
+    		curr.getPoint().draw();
+    		curr.getPoint().drawTo(curr.getNext().getPoint());
+    		curr = curr.getNext();
+    	}
+
+    }
+}

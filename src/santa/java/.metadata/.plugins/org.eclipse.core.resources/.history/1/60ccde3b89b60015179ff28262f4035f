@@ -1,0 +1,105 @@
+
+public class Tour {
+	private class Node {
+		private Point p;
+		private Node next;
+
+		public Node(Point p) {
+			this.p = p;
+			next = null;
+		}
+
+		public void setNext(Node next) {
+			this.next = next;
+		}
+
+		public Node getNext() {
+			return next;
+		}
+
+		public Point getPoint() {
+			return p;
+		}
+	}
+
+	private Node start;
+
+	public Tour() {
+		start = null;
+	}
+
+	public int size() {
+
+		if (start == null)
+			return 0;
+
+		Node curr = start;
+		int size = 0;
+		while (curr.getNext() != null) {
+			curr = curr.getNext();
+			size++;
+		}
+		return size;
+	}
+	
+	public double distance(){
+		
+		if (start == null)
+			return 0;
+
+		Node curr = start;
+		double dist = 0;
+		while (curr.getNext() != null) {
+			curr = curr.getNext();
+			dist = dist + curr.getPoint().distanceTo(curr.getNext().getPoint());
+		}
+		dist = dist + curr.getPoint().distanceTo(start.getPoint());
+		return dist;
+	}
+	
+    public void insertNearest(Point p){
+    	Node node = new Node(p);
+    	
+    	if(start == null){
+    		start = node;
+    		return;
+    	}
+    	
+    	if(size()==1){
+    		start.setNext(node);
+    		return;
+    	}
+    	
+    	Node nearestNode = null;
+    	Node curr = start;
+    	double nearest = -1;
+    	while(curr.getNext()!=null){
+    		double dist = curr.getPoint().distanceTo(p);
+    		if(dist < nearest || nearest < 0){
+    			nearest = dist;
+    			nearestNode = curr;
+    		}
+    		curr = curr.getNext();
+    	}
+    	
+    	Node oldNext = nearestNode.getNext();
+    	nearestNode.setNext(node);
+    	node.setNext(oldNext);
+    	
+    }
+    
+    public void draw(){
+    	if(start == null)
+    		return;
+    	start.getPoint().draw();
+    	
+    	Node curr = start;
+    	while(curr.getNext()!=null){
+    		curr.getPoint().drawTo(curr.getNext().getPoint());
+    		curr.getPoint().draw();
+    		curr = curr.getNext();
+    	}
+    	
+    	curr.getPoint().drawTo(start.getPoint());
+    }
+}

@@ -1,0 +1,28 @@
+
+public class Tour {
+	private class Node{
+		private Point p;
+		private Node next;
+	}
+	
+	public Node(Point p){
+		this.p = p;
+		next = null;
+	}
+	
+	public void setNext(Node next){
+		this.next = next;
+	}
+	
+	public void getNext(){
+		return next;
+	}
+	
+	public Point getPoint(){
+		return p;
+	}
+	
+	
+	
+	
+}

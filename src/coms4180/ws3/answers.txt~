@@ -1,0 +1,8 @@
+question 1:
+a.  all the rules use pattern matching to detect known attacks.
+b.  this basic approach could suffer two problems:
+      1. attackers could try to avoid all of the known patterns.
+      2. attackers could swamp snort with a lot of attacks of known patterns as noise and then hide the true intrusions among the noise
+
+
+question 2:

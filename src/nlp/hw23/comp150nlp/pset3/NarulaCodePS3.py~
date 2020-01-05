@@ -1,0 +1,332 @@
+import sys
+from collections import defaultdict
+from math import log, exp
+from nltk.corpus import treebank
+from nltk.tag.util import untag  # Untags a tagged sentence. 
+import nltk.tag.util as util
+
+unknown_token = "<UNK>"  # unknown word token.
+start_token = "<S>"  # sentence boundary token.
+end_token = "</S>"  # sentence boundary token.
+
+""" Remove trace tokens and tags from the treebank as these are not necessary.
+"""
+def TreebankNoTraces():
+    return [[x for x in sent if x[1] != "-NONE-"] for sent in treebank.tagged_sents()]
+        
+class BigramHMM:
+    def __init__(self):
+        """ Implement:
+        self.transitions, the A matrix of the HMM: a_{ij} = P(t_j | t_i)
+        self.emissions, the B matrix of the HMM: b_{ii} = P(w_i | t_i)
+        self.dictionary, a dictionary that maps a word to the set of possible tags
+        """
+        self.transitions = {}
+        self.emissions = {}
+        self.dictionary = defaultdict(lambda: defaultdict(float)) 
+
+        
+    def count_unigrams(self, sentences):      
+        self.unigram_counts = count_occurences(sentences)
+            
+    def count_bigrams(self, sentences):
+            
+        bigramm_counts = defaultdict(float)
+        for sentence in sentences:
+            for index, word in enumerate(sentence):
+                if index > 0:
+                    w1, w2 = sentence[index-1], sentence[index]
+                    bigramm_counts[(w1,w2)] += 1
+        return bigramm_counts
+        
+        
+    def calculate_transitions(self, training_set):
+        training_set_tags = [get_tags(item) for item in training_set]
+        unigram_tags = count_occurences(training_set_tags)
+        bigram_tags = self.count_bigrams(training_set_tags)
+        for tags, count in bigram_tags.iteritems():
+            self.transitions[tags] = log(count / unigram_tags[tags[0]])
+            
+            
+    def get_emissions(self,training_set):
+        training_set_tags = [get_word_tags(item) for item in training_set]
+        word_tag = count_occurences(training_set_tags)
+        training_tags = [get_tags(item) for item in training_set]
+        unigram_counts = count_occurences(training_tags)
+        for key, val in word_tag.iteritems():
+            self.emissions[key] = log(val / unigram_counts[key[1]])
+
+                
+    def create_dictionary(self, data_set):
+        data_dict = defaultdict(lambda: defaultdict(float)) 
+        for sentence in data_set:
+            for word, tag in sentence:
+                data_dict[word][tag] += 1
+        return data_dict
+           
+        
+    def Train(self, training_set):
+        """ 
+        1. Estimate the A matrix a_{ij} = P(t_j | t_i)
+        2. Estimate the B matrix b_{ii} = P(w_i | t_i)
+        3. Compute the tag dictionary 
+        """
+
+        self.calculate_transitions(training_set)
+        self.get_emissions(training_set)
+        self.dictionary = self.create_dictionary(training_set)
+        
+            
+    def ComputePercentAmbiguous(self, data_set):
+        """ Compute the percentage of tokens in data_set that have more than one tag according to self.dictionary. """
+        
+        data_dict = self.create_dictionary(data_set)
+        count = 0.0
+        for token in data_dict.keys():
+            if len(self.dictionary[token]) > 1:
+                count += 1
+        return count / float(len(data_dict)) * 100
+                
+
+    def JointProbability(self, sent):
+        """ Compute the joint probability of the words and tags of a tagged sentence. """
+        result = 0.0
+        for index, token in enumerate(sent):
+            if index > 0:
+                previous_tag = sent[index-1][1]
+                current_tag = token[1]
+                result += (self.emissions[token] + self.transitions[(previous_tag, current_tag)])
+        return result
+
+    def Viterbi(self, sent):
+        """ Find the probability and identity of the most likely tag sequence given the sentence. """
+        
+        v = [defaultdict(float)] 
+        
+        
+        states = list(set(map(lambda x: x[0], self.transitions.keys())))
+    
+        first_token, first_tag = sent[0]
+        
+        
+        for s in states:
+            v[0][s] = self.dictionary[first_token][s] / sum(self.dictionary[first_token].values())
+            try:
+                v[0][s] *= exp(self.emissions[(first_token,s)])
+            except KeyError:
+                v[0][s] *= 1
+        
+        for t, token_tag in enumerate(sent):
+            v.append(defaultdict(float))
+            token, tag = token_tag
+            
+            if (t > 0):
+                for s in states:
+                    curr_prob_list = []
+                    
+                    for s0 in states:
+                        try:
+                            prob = v[t-1][s0] * exp(self.transitions[(s0,s)]) * exp(self.emissions[(token,s)])
+                        except KeyError:
+                            prob = 1
+                        state = s0
+                        curr_prob_list.append((prob, state))
+
+                    
+                    max_prob, max_state = max(curr_prob_list)
+                    v[t][s] = max_prob
+
+        opt = []
+        
+        for prob_dict in v:
+            for state, prob in prob_dict.items():
+                if prob_dict[state] == max(prob_dict.values()):
+                    opt.append(state)
+                    
+        h = max(v[-2].values()) #highest prob
+        
+        return (opt, h)
+        
+    def Test(self, test_set):
+        """ Use Viterbi and predict the most likely tag sequence for every sentence. Return a re-tagged test_set. """
+        
+        re_tagged_test_set = []
+        for sentence in test_set:
+            re_tagged_test_set.append(self.Viterbi(sentence))
+
+        return re_tagged_test_set
+
+def MostCommonClassBaseline(training_set, test_set):
+    """ Implement the most common class baseline for POS tagging. Return the test set tagged according to this baseline. """
+      
+    
+    make_dict = BigramHMM().create_dictionary(training_set)
+    common_tag = defaultdict(str)
+    new_test_set = [[""]*len(sent) for sent in test_set]
+    
+    for word, num_occurences in make_dict.iteritems():
+        k,v = max(num_occurences.iteritems(), key = lambda x: x[1])
+        common_tag[word] = k
+    
+    for index, sentence in enumerate(test_set):
+        for index2, word_tag in enumerate(sentence):
+            word = word_tag[0]
+            new_test_set[index][index2] = (word, common_tag[word])
+            
+    return new_test_set
+
+def ComputeAccuracy(test_set, test_set_predicted):
+    """ Using the gold standard tags in test_set, compute the sentence and tagging accuracy of test_set_predicted. """
+    
+        
+    n_sentences = len(test_set)
+    correct_tag = 0.
+    correct_sentence = 0.
+    total_tags = 0.
+   
+       
+    for index, sentence in enumerate(test_set):
+        num_sentences_tag_correct = 0
+        for index2, word_tag in enumerate(sentence):
+            
+            if len(sentence) != len(test_set_predicted[index]):
+                print sentence
+                print test_set_predicted[index]
+                
+            if test_set_predicted[index][index2] == word_tag:
+                
+                correct_tag += 1
+                num_sentences_tag_correct += 1
+            total_tags += 1
+               
+        if len(sentence) == num_sentences_tag_correct:
+            correct_sentence += 1
+            
+    print "Sentence Accuracy: ", (correct_sentence/ float(n_sentences))
+    print "Tagging Accuracy: ", (correct_tag / float(total_tags))
+    
+ 
+def create_vocabulary(sentences):
+    
+    voc = set()
+    for sentence in sentences:
+        for word in sentence: 
+            voc.add(word)
+    voc.add(unknown_token)
+    voc.add(start_token)
+    voc.add(end_token)
+    return voc
+    
+def count_occurences(sentences):
+    
+    word_counts = defaultdict(float)
+    for sentence in sentences:
+        for word in sentence:
+            word_counts[word] += 1
+    return word_counts
+    
+def get_word_tags(sentence):
+    tokens = []
+    for word_tag in sentence:
+        tokens.append(word_tag)
+    return tokens
+            
+def get_tags(sentence):
+    tokens = []
+    for word_tag in sentence:
+        tokens.append(word_tag[1])
+    return tokens
+    
+def get_words(sentence):
+    tokens = []
+    for word_tag in sentence:
+        tokens.append(word_tag[0])
+    return tokens
+    
+    
+def PreprocessText(sentences):
+    
+    result = []
+    
+    words = [get_words(sentence) for sentence in sentences]
+    tags = [get_tags(sentence) for sentence in sentences]
+    
+    word_counts = count_occurences(words)
+    
+    for sentence in words:
+        for index, word in enumerate(sentence):
+            
+            if word_counts[word] < 2:
+                sentence[index] = unknown_token
+                
+    for i, sentence in enumerate(words):
+        for j, word in enumerate(sentence):
+            
+            sentence[j] = (word,tags[i][j])
+            
+    result = [[(start_token, start_token)] + sentence + [(end_token, end_token)] for sentence in words]
+    
+    return result
+    
+def main():
+    treebank_tagged_sents = TreebankNoTraces()  # Remove trace tokens. 
+    training_set = treebank_tagged_sents[:3000]  # This is the train-test split that we will use. 
+    test_set = treebank_tagged_sents[3000:]
+    
+    
+    """ Transform the data sets by eliminating unknown words and adding sentence boundary tokens.
+    """
+    training_set_prep = PreprocessText(training_set)
+    test_set_prep = PreprocessText(test_set)
+    
+    """ Print the first sentence of each data set.
+
+    """
+    print "Here is the first sentence of the training set data after calling on PreProcess text."
+    print training_set_prep[0]
+    print
+    print "Here is the first sentence of the test set data after calling on PreProcess text."
+    print test_set_prep[0]
+    print
+    print "Here they are, untagged:"
+    print " ".join(untag(training_set_prep[0]))  # See nltk.tag.util module.
+    print
+    print " ".join(untag(test_set_prep[0]))
+    print
+
+    """ Estimate Bigram HMM from the training set, report level of ambiguity.
+    """
+    bigram_hmm = BigramHMM()
+    bigram_hmm.Train(training_set_prep)
+    print
+    print "Percent tag ambiguity in training set is: ", bigram_hmm.ComputePercentAmbiguous(training_set_prep)
+    print
+    print "Joint probability of the first sentence is: " , bigram_hmm.JointProbability(training_set_prep[0])
+    print
+    count = 0.0
+    for sentence in training_set_prep:
+        
+        count += bigram_hmm.JointProbability(sentence)
+    print "Sanity check value of entire training_set: ", count
+    print
+        
+    
+    """ Implement the most common class baseline. Report accuracy of the predicted tags.
+    """
+    test_set_predicted_baseline = MostCommonClassBaseline(training_set_prep, test_set_prep)
+    print "--- Most common class baseline accuracy ---"
+    print
+    ComputeAccuracy(test_set_prep, test_set_predicted_baseline)    
+
+    """ Use the Bigram HMM to predict tags for the test set. Report accuracy of the predicted tags.
+    """
+    #test_set_predicted_bigram_hmm = bigram_hmm.Test(test_set_prep)
+    print
+    print "--- Bigram HMM accuracy ---"
+    print
+    test_set_predicted_bigram_hmm = test_set_prep
+    ComputeAccuracy(test_set_prep, test_set_predicted_bigram_hmm)    
+
+if __name__ == "__main__": 
+    main()
+    

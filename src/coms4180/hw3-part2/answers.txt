@@ -1,0 +1,177 @@
+Problem 2 question a
+
+run script to send ICMP packet and display answers:
+sudo python qa.py ip_address
+
+sample output:
+
+$sudo python qa.py 10.0.0.9
+WARNING: No route found for IPv6 destination :: (no default route?)
+Sending ICMP packet...
+
+Begin emission:
+.Finished to send 1 packets.
+*
+Received 2 packets, got 1 answers, remaining 0 packets
+
+Received 1 replies:
+
+[(<IP  frag=0 proto=icmp dst=10.0.0.9 |<ICMP  |>>, <IP  version=4L ihl=5L tos=0x0 len=28 id=6751 flags= frag=0L ttl=64 proto=icmp chksum=0x4c74 src=10.0.0.9 dst=10.0.0.6 options=[] |<ICMP  type=echo-reply code=0 chksum=0xffff id=0x0 seq=0x0 |>>)]
+
+$sudo tcpdump -vv -XX
+21:05:25.962996 IP (tos 0x0, ttl 64, id 1, offset 0, flags [none], proto ICMP (1), length 28)
+    10.0.0.6 > 10.0.0.9: ICMP echo request, id 0, seq 0, length 8
+	0x0000:  001e 652a e720 b475 0e6e d005 0800 4500  ..e*...u.n....E.
+	0x0010:  001c 0001 0000 4001 66d2 0a00 0006 0a00  ......@.f.......
+	0x0020:  0009 0800 f7ff 0000 0000                 ..........
+21:05:25.966765 IP (tos 0x0, ttl 64, id 7274, offset 0, flags [none], proto ICMP (1), length 28)
+    10.0.0.9 > 10.0.0.6: ICMP echo reply, id 0, seq 0, length 8
+	0x0000:  b475 0e6e d005 001e 652a e720 0800 4500  .u.n....e*....E.
+	0x0010:  001c 1c6a 0000 4001 4a69 0a00 0009 0a00  ...j..@.Ji......
+	0x0020:  0006 0000 ffff 0000 0000                 ..........
+
+
+Problem 2 question b
+
+run python script(read inpartb.txt as config file):
+sudo python qb.py
+
+sample output:
+WARNING: No route found for IPv6 destination :: (no default route?)
+src ip: 127.0.0.1
+src port: 36000
+dest ip: 10.0.0.9
+dest port: 80
+pay load: 'GET / HTTP/1.1\r\n'
+###[ IP ]###
+  version   = 4
+  ihl       = None
+  tos       = 0x0
+  len       = None
+  id        = 1
+  flags     = 
+  frag      = 0
+  ttl       = 64
+  proto     = tcp
+  chksum    = None
+  src       = 127.0.0.1
+  dst       = 10.0.0.9
+  \options   \
+###[ TCP ]###
+     sport     = 36000
+     dport     = http
+     seq       = 0
+     ack       = 0
+     dataofs   = None
+     reserved  = 0
+     flags     = S
+     window    = 8192
+     chksum    = None
+     urgptr    = 0
+     options   = {}
+###[ Raw ]###
+        load      = "'GET / HTTP/1.1\\r\\n'"
+E<@�
+	��PP �/'GET / HTTP/1.1\r\n'
+Sending HTTP packet...
+
+.
+Sent 1 packets.
+done.
+
+$sudo tcpdump -vv -XX
+22:40:22.385409 IP (tos 0x0, ttl 64, id 1, offset 0, flags [none], proto TCP (6), length 60)
+    localhost.36000 > 10.0.0.9.http: Flags [S], cksum 0xe52f (correct), seq 0:20, win 8192, length 20
+	0x0000:  001e 652a e720 b475 0e6e d005 0800 4500  ..e*...u.n....E.
+	0x0010:  003c 0001 0000 4006 f1b1 7f00 0001 0a00  .<....@.........
+	0x0020:  0009 8ca0 0050 0000 0000 0000 0000 5002  .....P........P.
+	0x0030:  2000 e52f 0000 2747 4554 202f 2048 5454  .../..'GET./.HTT
+	0x0040:  502f 312e 315c 725c 6e27                 P/1.1\r\n'
+
+
+Problem 2 question c:
+
+run python script:
+sudo python qc.py 36000 3000
+
+sample output:
+
+WARNING: No route found for IPv6 destination :: (no default route?)
+sending to dest_port: 3000
+.
+Sent 1 packets.
+sending to dest_port: 3001
+.
+Sent 1 packets.
+sending to dest_port: 3002
+.
+Sent 1 packets.
+sending to dest_port: 3003
+.
+Sent 1 packets.
+sending to dest_port: 3004
+.
+Sent 1 packets.
+sending to dest_port: 3005
+.
+Sent 1 packets.
+sending to dest_port: 3006
+.
+Sent 1 packets.
+sending to dest_port: 3007
+.
+Sent 1 packets.
+sending to dest_port: 3008
+.
+Sent 1 packets.
+sending to dest_port: 3009
+.
+Sent 1 packets.
+sending to dest_port: 3010
+.
+Sent 1 packets.
+sending to dest_port: 3011
+.
+Sent 1 packets.
+sending to dest_port: 3012
+.
+Sent 1 packets.
+sending to dest_port: 3013
+.
+Sent 1 packets.
+sending to dest_port: 3014
+.
+Sent 1 packets.
+sending to dest_port: 3015
+.
+Sent 1 packets.
+sending to dest_port: 3016
+.
+Sent 1 packets.
+sending to dest_port: 3017
+.
+Sent 1 packets.
+sending to dest_port: 3018
+.
+Sent 1 packets.
+sending to dest_port: 3019
+.
+Sent 1 packets.
+sending to dest_port: 3020
+.
+Sent 1 packets.
+sending random 10 letters as pay load:TSBxLHEvWm
+.
+Sent 1 packets.
+sending random 10 letters as pay load:BVSjhzvexJ
+.
+Sent 1 packets.
+sending random 10 letters as pay load:kfhesmvomZ
+.
+Sent 1 packets.
+sending random 10 letters as pay load:BZalOBZfkC
+.
+Sent 1 packets.
+sending random 10 letters as pay load:hAQWpvOCBS
+.
+Sent 1 packets.

@@ -1,0 +1,22 @@
+INDEX VERSION 1.127+D:\kaggle\santa\java\.metadata\.plugins\org.eclipse.jdt.core
+3569611471.index
+903556315.index
+4002013288.index
+168033094.index
+766959896.index
+2610500453.index
+3431421187.index
+285254680.index
+2809197699.index
+3098243304.index
+3301533760.index
+4069783735.index
+109346212.index
+198670562.index
+1808538520.index
+215597313.index
+987971709.index
+1734149777.index
+3921789369.index
+3434419918.index
+1201480870.index
